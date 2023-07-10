@@ -13,7 +13,7 @@ function importWorks() {
         .then(data => {
             works = data;
             genererWorks(works)   
-            displayModal(works)   
+               
         });
 }
 importWorks()
@@ -102,81 +102,21 @@ function openModalCloseModal() {
     modal.querySelector('.js-modal-close').addEventListener('click', closeModal)
     modal.querySelector('.js-modal-stop').addEventListener('click', stopPropagation)
 
-
-    const modalClose = document.querySelector(".js-modal-close")
-    modalClose.addEventListener("click", () => closeModal())
-
-        function closeModal() {
-            modal.style.display = "none"
-            modal.removeEventListener('click', closeModal)
-            modal.querySelector('.js-modal-close').removeEventListener('click', closeModal)
-            modal.querySelector('.js-modal-stop').removeEventListener('click', stopPropagation)
-        }
-        
-        window.addEventListener('keydown', function (e) {
-            if (e.key === "Escape" || e.key === "Esc") {
-                closeModal(e)
-            }
+    const galleryModal = document.querySelector(".gallery-modal")
+    function displayModal(works) {
+        let imageModalHtml = ""
+        works.forEach((work) => {
+            imageModalHtml += `
+                <div class="img-gallery-modal">    
+                    <img src="${work.imageUrl}">
+                    <i class="fa-regular fa-trash-can" data-id="${work.id}"></i>
+                    <i class="fa-solid fa-arrows-up-down-left-right"></i>
+                    <p>éditer</p>
+                </div>    
+            `;
         })
-
-                const btnModal2 = document.querySelector(".btn-modal2")
-                btnModal2.addEventListener("click", () => openModal2())
-
-                function openModal2() {
-                    modalWrapper.innerHTML = `
-                                    <button class="js-modal-return btn-arrow-left"><i class="fa-solid fa-arrow-left fa-xl"></i></button>
-                                    <button class="js-modal-close btn-xmark"><i class="fa-solid fa-xmark fa-xl"></i></button>
-                                    <h3 id="tiltemodal">Ajout Photo</h3>
-                                    <div class="ajout-photo">
-                                        <div class="photo">
-                                            <div class="insertion-photo">
-                                                <i class="fa-regular fa-image fa-5x"></i>
-                                            </div>
-                                            <a href="#" class="btn-ajout-photo">+ Ajouter photo</a>
-                                            <p class="dim-photo">jpg, png : 4mo max</p>
-                                        </div>
-                                        <label for="titre">Titre</label>
-			                            <input type="text" name="titre" id="titre">
-                                        <label for="categories">Catégories</label>
-                                        <select name="categorie" id="categories">
-                                            <option value=""></option>
-                                            <option value="Objets">Objets</option>
-                                            <option value="Appartements">Appartements</option>
-                                            <option value="Hotels & restaurants">Hotels & restaurants</option>
-                                    </div>
-                                    <input type="submit" value="Valider">
-
-                    `
-                    const modalClose = document.querySelector(".js-modal-close")
-                    modalClose.addEventListener("click", () => closeModal())
-
-                    const arrowLeft = document.querySelector(".js-modal-return")
-                    arrowLeft.addEventListener("click", () => openModalCloseModal())
-                }
-                
-}
-
-const stopPropagation = function (e) {
-    e.stopPropagation()
-}
-
-// recup des travaux et suppression dans la modale
-const galleryModal = document.querySelector(".gallery-modal")
-
-function displayModal(works) {
-    let imageModalHtml = ""
-    works.forEach((work) => {
-        imageModalHtml += `
-            <div class="img-gallery-modal">    
-                <img src="${work.imageUrl}">
-                <i class="fa-regular fa-trash-can" data-id="${work.id}"></i>
-                <i class="fa-solid fa-arrows-up-down-left-right"></i>
-                <p>éditer</p>
-            </div>    
-        `;
-    })
-
-    const suppWork = document.querySelectorAll(".fa-trash-can")
+        galleryModal.innerHTML = imageModalHtml
+        const suppWork = document.querySelectorAll(".fa-trash-can")
 
     let deleteRequest = {
         method: "DELETE",
@@ -210,4 +150,143 @@ function displayModal(works) {
             })
         })
     })
+
+    }
+    displayModal(works)
+
+    const modalClose = document.querySelector(".js-modal-close")
+    modalClose.addEventListener("click", () => closeModal())
+
+        function closeModal() {
+            modal.style.display = "none"
+            modal.removeEventListener('click', closeModal)
+            modal.querySelector('.js-modal-close').removeEventListener('click', closeModal)
+            modal.querySelector('.js-modal-stop').removeEventListener('click', stopPropagation)
+        }
+        
+        window.addEventListener('keydown', function (e) {
+            if (e.key === "Escape" || e.key === "Esc") {
+                closeModal(e)
+            }
+        })
+
+                const btnModal2 = document.querySelector(".btn-modal2")
+                btnModal2.addEventListener("click", () => openModal2())
+
+                function openModal2() {
+                    modalWrapper.innerHTML = `
+                                    <button class="js-modal-return btn-arrow-left"><i class="fa-solid fa-arrow-left fa-xl"></i></button>
+                                    <button class="js-modal-close btn-xmark"><i class="fa-solid fa-xmark fa-xl"></i></button>
+                                    <h3 id="tiltemodal">Ajout Photo</h3>
+                                    <form action="" class="ajout-photo">
+                                        <div class="photo-form">
+                                            <div class="insertion-photo">
+                                                <i class="fa-regular fa-image fa-5x"></i>
+                                            </div>
+                                            <img src="" class="img-selected"
+                                            <div>    
+                                                <label for="photo" class="btn-ajout-photo">+ Ajouter photo</label>
+                                                <input type="file" id="photo" name="photo">
+                                                <p class="dim-photo">jpg, png : 4mo max</p>
+                                            </div>    
+                                        </div>
+                                        <div>    
+                                            <div class="champs-modal">    
+                                                <label for="titre">Titre</label>
+                                                <input type="text" name="titre" id="titre">
+                                            </div>
+                                            <div class="champs-modal">    
+                                                <label for="categories">Catégories</label>
+                                                <select name="categorie" id="categories">
+                                                    <option value=""></option>
+                                                    <option value="Objets">Objets</option>
+                                                    <option value="Appartements">Appartements</option>
+                                                    <option value="Hotels & restaurants">Hotels & restaurants</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <p class="form-invalide-message">Tous les champs doivent être remplis !</p>
+                                    <p class="form-valide-message">Informations enregistrées !</p>
+                                    <p class="request-invalide-message">Erreur lors de l'envoi !</p>
+                                    <button class="btn-submit-valider">Valider</button>
+                    `
+                    const modalClose = document.querySelector(".js-modal-close")
+                    modalClose.addEventListener("click", () => closeModal())
+
+                    const arrowLeft = document.querySelector(".js-modal-return")
+                    arrowLeft.addEventListener("click", () => openModalCloseModal())
+
+                    const photoInput = document.getElementById("photo")
+                    const titleInput = document.getElementById("titre")
+                    const selectInput = document.getElementById("categories")
+                    const submitWorkButton = document.querySelector(".btn-submit-valider")
+                    const selectedImage = document.querySelector(".img-selected")
+                    const formInvalideMessage = document.querySelector(".form-invalide-message")
+                    const valideFormMessage = document.querySelector(".form-valide-message")
+                    const requestInvalideMessage = document.querySelector(".request-invalide-message")
+
+                    photoInput.addEventListener("change", () => {
+                    const file = photoInput.files[0]
+                    const reader = new FileReader()
+
+                    reader.onload = (e) => {
+                        selectedImage.src = e.target.result
+                        const addImgForm = document.querySelector(".photo-form");
+                        const formElements = addImgForm.querySelectorAll(".photo-form > *")
+
+                    formElements.forEach((element) => {
+                        element.style.display = "none"
+                        })
+                    selectedImage.style.display = "flex"
+                    }
+                    reader.readAsDataURL(file)
+                    })
+
+                function createNewYork() {
+                    submitWorkButton.addEventListener("click", () => {
+                        if (photoInput.value === '' || titleInput.value === '' || selectInput.value === '') {
+                            formInvalideMessage.style.display = "block";
+                            return;
+                        }
+                        
+                        let formData = new FormData()
+
+                        formData.append("image", photoInput.files[0])
+                        formData.append("title", titleInput.value)
+                        formData.append("category", selectInput.value)
+
+                        let addRequest = {
+                            method: "POST",
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            },
+                            body: formData
+                        }
+                        fetch("http://localhost:5678/api/works", addRequest)
+                            .then(reponse => {
+                                if( reponse.ok) {
+                                    formInvalideMessage.style.display = "none"
+                                    valideFormMessage.style.display = "block"
+                                    submitWorkButton.classList.add("active")
+                                } else {
+                                    formInvalideMessage.style.display = "none"
+                                    requestInvalideMessage.style.display = "block"
+                                }
+                            })
+                    })
+                }
+                createNewYork()
+
+                }
+                
 }
+
+const stopPropagation = function (e) {
+    e.stopPropagation()
+}
+
+
+
+
+    
