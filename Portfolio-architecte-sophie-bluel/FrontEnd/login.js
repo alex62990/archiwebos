@@ -1,6 +1,6 @@
-let password = document.querySelector('#password');
-let email = document.querySelector('#email');
-let submit= document.querySelector('#submit');
+let password = document.querySelector('#password')
+let email = document.querySelector('#email')
+let submit= document.querySelector('#submit')
 
 
 let boutonLogin = submit.addEventListener("click", (event) => {                     // ecoute bouton login avec preventDefault pour attendre les instructions avant de lancer event
@@ -18,12 +18,13 @@ let boutonLogin = submit.addEventListener("click", (event) => {                 
     })
         .then(reponse => reponse.json())
         .then(data => {
-            let token = data.token;
-            localStorage.setItem("Token", token);                                   // stocker token dans le localStorage
+            let token = data.token
+            localStorage.setItem("Token", token)                                  // stocker token dans le localStorage
             if (token) {                                                            // si token correspond redirection sur index sinon message erreur
-                window.location.replace("index.html");
+                window.location.replace("index.html")
             } else {
-                alert('Mot de passe ou identifiant incorrect');
+                const messageLogin = document.querySelector(".message-login")
+                messageLogin.style.display = "flex"
             }
-        });
+        })
     })

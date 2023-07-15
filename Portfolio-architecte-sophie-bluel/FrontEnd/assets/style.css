@@ -372,7 +372,7 @@ h3 {
 
 .gallery-modal {
 	display: flex;
-	justify-content: space-between;
+	gap: 10px;
 	flex-wrap: wrap;
 	margin: auto;
 	width: 420px;
@@ -541,7 +541,7 @@ h3 {
 	color: green;
 }
 .active {
-	background-color: #1D6154;
+	background-color: #1D6154 !important;
 }
 
 .form-invalide-message,
@@ -562,4 +562,12 @@ h3 {
 	border-radius: 60px ;
 	border-style: none;
 	padding: 10px 30px 10px 30px;
+}
+
+.message-login {
+	display: flex;
+	justify-content: center;
+	margin-top: 20px;
+	color: red;
+	display: none;
 }

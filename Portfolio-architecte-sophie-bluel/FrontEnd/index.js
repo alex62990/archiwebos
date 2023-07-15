@@ -18,6 +18,15 @@ function importWorks() {
 }
 importWorks()
 
+function categoriesImport() {
+    fetch("http://localhost:5678/api/categories")
+        .then((res) => res.json())
+        .then((data) => {
+            categories = data
+        })
+}
+categoriesImport()
+
 function genererWorks(works) {
     gallery.innerHTML = ""
 
@@ -173,12 +182,20 @@ function openModalCloseModal() {
                 const btnModal2 = document.querySelector(".btn-modal2")
                 btnModal2.addEventListener("click", () => openModal2())
 
+                function generateCategorie() {
+                    let optionsHTML = ""
+                    categories.forEach(category => {
+                        optionsHTML += `<option value="${category.id}">${category.name}</option>`
+                    })
+                    return optionsHTML
+                }
+
                 function openModal2() {
                     modalWrapper.innerHTML = `
                                     <button class="js-modal-return btn-arrow-left"><i class="fa-solid fa-arrow-left fa-xl"></i></button>
                                     <button class="js-modal-close btn-xmark"><i class="fa-solid fa-xmark fa-xl"></i></button>
                                     <h3 id="tiltemodal">Ajout Photo</h3>
-                                    <form action="" class="ajout-photo">
+                                    <form action="" method="post" class="ajout-photo" enctype="multipart/form-data">
                                         <div class="photo-form">
                                             <div class="insertion-photo">
                                                 <i class="fa-regular fa-image fa-5x"></i>
@@ -186,7 +203,7 @@ function openModalCloseModal() {
                                             <img src="" class="img-selected"
                                             <div>    
                                                 <label for="photo" class="btn-ajout-photo">+ Ajouter photo</label>
-                                                <input type="file" id="photo" name="photo">
+                                                <input type="file" accept=".png, .jpg" id="photo" name="photo">
                                                 <p class="dim-photo">jpg, png : 4mo max</p>
                                             </div>    
                                         </div>
@@ -199,17 +216,15 @@ function openModalCloseModal() {
                                                 <label for="categories">Catégories</label>
                                                 <select name="categorie" id="categories">
                                                     <option value=""></option>
-                                                    <option value="Objets">Objets</option>
-                                                    <option value="Appartements">Appartements</option>
-                                                    <option value="Hotels & restaurants">Hotels & restaurants</option>
+                                                    ${generateCategorie()}
                                                 </select>
                                             </div>
                                         </div>
                                     </form>
+                                    <button class="btn-submit-valider">Valider</button>
                                     <p class="form-invalide-message">Tous les champs doivent être remplis !</p>
                                     <p class="form-valide-message">Informations enregistrées !</p>
-                                    <p class="request-invalide-message">Erreur lors de l'envoi !</p>
-                                    <button class="btn-submit-valider">Valider</button>
+                                    <p class="request-invalide-message">Erreur lors de l'envoi !</p>                                    
                     `
                     const modalClose = document.querySelector(".js-modal-close")
                     modalClose.addEventListener("click", () => closeModal())
@@ -243,7 +258,7 @@ function openModalCloseModal() {
                     reader.readAsDataURL(file)
                     })
 
-                function createNewYork() {
+                function createNewWork() {
                     submitWorkButton.addEventListener("click", () => {
                         if (photoInput.value === '' || titleInput.value === '' || selectInput.value === '') {
                             formInvalideMessage.style.display = "block";
@@ -276,12 +291,11 @@ function openModalCloseModal() {
                             })
                     })
                 }
-                createNewYork()
-
+                createNewWork()
+                
                 }
                 
 }
-
 const stopPropagation = function (e) {
     e.stopPropagation()
 }
