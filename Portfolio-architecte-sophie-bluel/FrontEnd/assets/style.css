@@ -356,6 +356,20 @@ h3 {
 	color: #B1663C;
 }
 
+.modal-button-img {
+	display: flex;
+	justify-content: center;
+	border-style: none;
+	background-color: #fff;
+	margin-left: 50px;
+	align-items: center;
+	display: none;
+}
+
+.modal-button-img:hover {
+	color: #B1663C;
+}
+
 .btn-modal2 {
 	display: flex;
 	justify-content: center;

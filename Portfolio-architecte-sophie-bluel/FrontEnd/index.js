@@ -11,16 +11,15 @@ function importWorks() {
     fetch("http://localhost:5678/api/works")
         .then(reponse => reponse.json())
         .then(data => {
-            works = data;
+            works = data
             genererWorks(works)   
-               
-        });
+        })
 }
 importWorks()
 
 function categoriesImport() {
     fetch("http://localhost:5678/api/categories")
-        .then((res) => res.json())
+        .then((reponse) => reponse.json())
         .then((data) => {
             categories = data
         })
@@ -74,6 +73,7 @@ boutons.forEach((bouton) => {                                       // pour chaq
 
 // connexion utilisateur
 const modalButton = document.querySelector(".modal-button")
+const modalButtonImg = document.querySelector(".modal-button-img")
 
   let token = localStorage.getItem("Token")
   if (token) {
@@ -86,6 +86,7 @@ const modalButton = document.querySelector(".modal-button")
     containerFiltre.style.display = "none"               
     login.innerHTML = "logout" 
     modalButton.style.display = "flex"
+    modalButtonImg.style.display = "flex"
     login.addEventListener("click", () => {            
         localStorage.removeItem("Token")
         window.location.replace("login.html")
@@ -122,44 +123,45 @@ function openModalCloseModal() {
                     <i class="fa-solid fa-arrows-up-down-left-right"></i>
                     <p>éditer</p>
                 </div>    
-            `;
+            `
         })
         galleryModal.innerHTML = imageModalHtml
         const suppWork = document.querySelectorAll(".fa-trash-can")
 
-    let deleteRequest = {
-        method: "DELETE",
-        headers: {
-            Authorization: `Bearer ${token}`
+        let deleteRequest = {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         }
-    }
 
-    suppWork.forEach(trashcan => {
-        trashcan.addEventListener("click", () => {
-            const workId = trashcan.getAttribute("data-id")
-            fetch(`http://localhost:5678/api/works/${workId}`, deleteRequest)
+        suppWork.forEach(trashcan => {
+            trashcan.addEventListener("click", () => {
+                const workId = trashcan.getAttribute("data-id")
+                fetch(`http://localhost:5678/api/works/${workId}`, deleteRequest)
+                    .then(reponse => {
+                        if (reponse.ok) {
+                            trashcan.parentElement.remove()
+                            const deletefigure = document.querySelector(`figure[data-id="${workId}"]`)
+                            deletefigure.remove()
+                            importWorks(works)
+                        }
+                    })
+            })
+            const suppresionGalleryModal = document.querySelector(".sup-gallery")
+            suppresionGalleryModal.addEventListener("click", () => {
+                const workId = trashcan.getAttribute("data-id")
+                fetch(`http://localhost:5678/api/works/${workId}`, deleteRequest)
                 .then(reponse => {
                     if (reponse.ok) {
                         trashcan.parentElement.remove()
                         const deletefigure = document.querySelector(`figure[data-id="${workId}"]`)
                         deletefigure.remove()
+                        importWorks(works)
                     }
                 })
-        })
-        const suppresionGalleryModal = document.querySelector(".sup-gallery")
-        suppresionGalleryModal.addEventListener("click", () => {
-            const workId = trashcan.getAttribute("data-id")
-            fetch(`http://localhost:5678/api/works/${workId}`, deleteRequest)
-            .then(reponse => {
-                if (reponse.ok) {
-                    trashcan.parentElement.remove()
-                    const deletefigure = document.querySelector(`figure[data-id="${workId}"]`)
-                    deletefigure.remove()
-                }
             })
         })
-    })
-
     }
     displayModal(works)
 
@@ -284,6 +286,8 @@ function openModalCloseModal() {
                                     formInvalideMessage.style.display = "none"
                                     valideFormMessage.style.display = "block"
                                     submitWorkButton.classList.add("active")
+                                    importWorks(works)
+                                    displayModal(works)
                                 } else {
                                     formInvalideMessage.style.display = "none"
                                     requestInvalideMessage.style.display = "block"
