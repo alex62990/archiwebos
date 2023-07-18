@@ -7,8 +7,8 @@ const containerFiltre = document.querySelector('.container-filtre')
 const modal = document.querySelector(".modal")
 const modalWrapper = document.querySelector(".modal-wrapper")
 
-function importWorks() {
-    fetch("http://localhost:5678/api/works")
+async function importWorks() {
+    await fetch("http://localhost:5678/api/works")
         .then(reponse => reponse.json())
         .then(data => {
             works = data
@@ -71,6 +71,7 @@ boutons.forEach((bouton) => {                                       // pour chaq
     })
   })
 
+
 // connexion utilisateur
 const modalButton = document.querySelector(".modal-button")
 const modalButtonImg = document.querySelector(".modal-button-img")
@@ -113,7 +114,7 @@ function openModalCloseModal() {
     modal.querySelector('.js-modal-stop').addEventListener('click', stopPropagation)
 
     const galleryModal = document.querySelector(".gallery-modal")
-    function displayModal(works) {
+    function displayModal() {
         let imageModalHtml = ""
         works.forEach((work) => {
             imageModalHtml += `
@@ -144,7 +145,9 @@ function openModalCloseModal() {
                             trashcan.parentElement.remove()
                             const deletefigure = document.querySelector(`figure[data-id="${workId}"]`)
                             deletefigure.remove()
-                            importWorks(works)
+                            works = works.filter(function(work) {
+                                return work.id != workId
+                            })
                         }
                     })
             })
@@ -157,13 +160,15 @@ function openModalCloseModal() {
                         trashcan.parentElement.remove()
                         const deletefigure = document.querySelector(`figure[data-id="${workId}"]`)
                         deletefigure.remove()
-                        importWorks(works)
+                        works = works.filter(function(work) {
+                            return work.id != workId
+                        })
                     }
                 })
             })
         })
     }
-    displayModal(works)
+    displayModal()
 
     const modalClose = document.querySelector(".js-modal-close")
     modalClose.addEventListener("click", () => closeModal())
@@ -197,7 +202,7 @@ function openModalCloseModal() {
                                     <button class="js-modal-return btn-arrow-left"><i class="fa-solid fa-arrow-left fa-xl"></i></button>
                                     <button class="js-modal-close btn-xmark"><i class="fa-solid fa-xmark fa-xl"></i></button>
                                     <h3 id="tiltemodal">Ajout Photo</h3>
-                                    <form action="" method="post" class="ajout-photo" enctype="multipart/form-data">
+                                    <form id="formEnvoyer" action="" method="post" class="ajout-photo" enctype="multipart/form-data">
                                         <div class="photo-form">
                                             <div class="insertion-photo">
                                                 <i class="fa-regular fa-image fa-5x"></i>
@@ -222,8 +227,9 @@ function openModalCloseModal() {
                                                 </select>
                                             </div>
                                         </div>
+                                        <button type="submit" class="btn-submit-valider">Valider</button>
                                     </form>
-                                    <button class="btn-submit-valider">Valider</button>
+                                    
                                     <p class="form-invalide-message">Tous les champs doivent être remplis !</p>
                                     <p class="form-valide-message">Informations enregistrées !</p>
                                     <p class="request-invalide-message">Erreur lors de l'envoi !</p>                                    
@@ -237,7 +243,7 @@ function openModalCloseModal() {
                     const photoInput = document.getElementById("photo")
                     const titleInput = document.getElementById("titre")
                     const selectInput = document.getElementById("categories")
-                    const submitWorkButton = document.querySelector(".btn-submit-valider")
+                    const submitWorkButton = document.getElementById("formEnvoyer")
                     const selectedImage = document.querySelector(".img-selected")
                     const formInvalideMessage = document.querySelector(".form-invalide-message")
                     const valideFormMessage = document.querySelector(".form-valide-message")
@@ -261,11 +267,15 @@ function openModalCloseModal() {
                     })
 
                 function createNewWork() {
-                    submitWorkButton.addEventListener("click", () => {
-                        if (photoInput.value === '' || titleInput.value === '' || selectInput.value === '') {
-                            formInvalideMessage.style.display = "block";
-                            return;
-                        }
+                    submitWorkButton.addEventListener("submit", async (event) => {
+                        event.preventDefault()
+                        const max = 4 * 1024 * 1024
+                        if (photoInput.files[0].size > max) {
+                            alert("taille de l'image trop importante")
+                        } else if (photoInput.value === '' || titleInput.value === '' || selectInput.value === '') {
+                                formInvalideMessage.style.display = "block"
+                                return
+                        } else {
                         
                         let formData = new FormData()
 
@@ -286,14 +296,15 @@ function openModalCloseModal() {
                                     formInvalideMessage.style.display = "none"
                                     valideFormMessage.style.display = "block"
                                     submitWorkButton.classList.add("active")
-                                    importWorks(works)
-                                    displayModal(works)
+                                    genererWorks(works)
                                 } else {
                                     formInvalideMessage.style.display = "none"
                                     requestInvalideMessage.style.display = "block"
                                 }
                             })
+                        }
                     })
+                
                 }
                 createNewWork()
                 
