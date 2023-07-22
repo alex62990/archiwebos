@@ -7,26 +7,32 @@ const containerFiltre = document.querySelector('.container-filtre')
 const modal = document.querySelector(".modal")
 const modalWrapper = document.querySelector(".modal-wrapper")
 
-async function importWorks() {
-    await fetch("http://localhost:5678/api/works")
-        .then(reponse => reponse.json())
-        .then(data => {
-            works = data
-            genererWorks(works)   
-        })
+// importation des travaux
+
+const importWorks = () => {   
+        fetch("http://localhost:5678/api/works")
+            .then(response => response.json())
+            .then(data => {
+                works = data
+                genererWorks(works)   
+            })
 }
 importWorks()
 
-function categoriesImport() {
+// importation des catégories des travaux
+
+const categoriesImport = () => {
     fetch("http://localhost:5678/api/categories")
-        .then((reponse) => reponse.json())
+        .then(response => response.json())
         .then((data) => {
             categories = data
         })
 }
 categoriesImport()
 
-function genererWorks(works) {
+// fonction pour générer les travaux à partir de l'api
+
+const genererWorks = works => {
     gallery.innerHTML = ""
 
     works.forEach((work) => {
@@ -45,7 +51,8 @@ function genererWorks(works) {
     })
 }
 
-function filtrerWorks() {
+// fonction pour créer les filtres 
+const filtrerWorks = () => {
     filtres.forEach(filtre => {
         const valeurFiltre = filtre.textContent
 
@@ -57,6 +64,8 @@ function filtrerWorks() {
     }) 
 }
 filtrerWorks()
+
+// fonction pour faire le tri
 
 const boutons = document.querySelectorAll('.filtre')
 let bouton = document.querySelector('.filtre')
@@ -72,7 +81,8 @@ boutons.forEach((bouton) => {                                       // pour chaq
   })
 
 
-// connexion utilisateur
+// connexion utilisateur et affichage des boutons de modales
+
 const modalButton = document.querySelector(".modal-button")
 const modalButtonImg = document.querySelector(".modal-button-img")
 
@@ -100,7 +110,7 @@ document.querySelectorAll(".modal-button").forEach(btn => {
     btn.addEventListener("click", () => openModalCloseModal())
 })
 
-function openModalCloseModal() {
+const openModalCloseModal = () => {
     modal.style.display = "flex"
     modalWrapper.innerHTML = `
                                 <button class="js-modal-close btn-xmark"><i class="fa-solid fa-xmark fa-xl"></i></button>
@@ -114,7 +124,7 @@ function openModalCloseModal() {
     modal.querySelector('.js-modal-stop').addEventListener('click', stopPropagation)
 
     const galleryModal = document.querySelector(".gallery-modal")
-    function displayModal() {
+    const displayModal = () => {
         let imageModalHtml = ""
         works.forEach((work) => {
             imageModalHtml += `
@@ -139,32 +149,54 @@ function openModalCloseModal() {
         suppWork.forEach(trashcan => {
             trashcan.addEventListener("click", () => {
                 const workId = trashcan.getAttribute("data-id")
-                fetch(`http://localhost:5678/api/works/${workId}`, deleteRequest)
-                    .then(reponse => {
-                        if (reponse.ok) {
-                            trashcan.parentElement.remove()
-                            const deletefigure = document.querySelector(`figure[data-id="${workId}"]`)
-                            deletefigure.remove()
-                            works = works.filter(function(work) {
-                                return work.id != workId
-                            })
-                        }
-                    })
+                try {
+                    fetch(`http://localhost:5678/api/works/${workId}`, deleteRequest)
+                        .then(response => {
+                            if (response.ok) {
+                                trashcan.parentElement.remove()
+                                const index = works.findIndex(work => work.id == workId)
+                                works.splice(index, 1)
+                                refreshProjects(works)
+                                }
+                            
+                            if (response.status === 401) {
+                                console.error("Unauthorized", response.statusText)
+                            }
+
+                            if (response.status === 500) {
+                                console.error("Unexpected Behaviour", response.statusText)
+                            }
+                        })
+                } catch (error) {
+                    console.log(error)
+                }              
             })
+
             const suppresionGalleryModal = document.querySelector(".sup-gallery")
             suppresionGalleryModal.addEventListener("click", () => {
                 const workId = trashcan.getAttribute("data-id")
-                fetch(`http://localhost:5678/api/works/${workId}`, deleteRequest)
-                .then(reponse => {
-                    if (reponse.ok) {
-                        trashcan.parentElement.remove()
-                        const deletefigure = document.querySelector(`figure[data-id="${workId}"]`)
-                        deletefigure.remove()
-                        works = works.filter(function(work) {
-                            return work.id != workId
+                try {
+                    fetch(`http://localhost:5678/api/works/${workId}`, deleteRequest)
+                        .then(response => {
+                            if (response.ok) {
+                                trashcan.parentElement.remove()
+                                const index = works.findIndex(work => work.id == workId)
+                                works.splice(index, 1)
+                                refreshProjects(works)
+                                }
+
+                            if (response.status === 401) {
+                                console.error("Unauthorized", response.statusText)
+                            }
+
+                            if (response.status === 500) {
+                                console.error("Unexpected Behaviour", response.statusText)
+                            }
                         })
-                    }
-                })
+
+                } catch (error) {
+                    console.log(error)
+                }              
             })
         })
     }
@@ -189,7 +221,7 @@ function openModalCloseModal() {
                 const btnModal2 = document.querySelector(".btn-modal2")
                 btnModal2.addEventListener("click", () => openModal2())
 
-                function generateCategorie() {
+                const generateCategorie = () => {
                     let optionsHTML = ""
                     categories.forEach(category => {
                         optionsHTML += `<option value="${category.id}">${category.name}</option>`
@@ -197,7 +229,7 @@ function openModalCloseModal() {
                     return optionsHTML
                 }
 
-                function openModal2() {
+                const openModal2 = () => {
                     modalWrapper.innerHTML = `
                                     <button class="js-modal-return btn-arrow-left"><i class="fa-solid fa-arrow-left fa-xl"></i></button>
                                     <button class="js-modal-close btn-xmark"><i class="fa-solid fa-xmark fa-xl"></i></button>
@@ -244,6 +276,7 @@ function openModalCloseModal() {
                     const titleInput = document.getElementById("titre")
                     const selectInput = document.getElementById("categories")
                     const submitWorkButton = document.getElementById("formEnvoyer")
+                    const btnEnvoyerForm = document.querySelector(".btn-submit-valider")
                     const selectedImage = document.querySelector(".img-selected")
                     const formInvalideMessage = document.querySelector(".form-invalide-message")
                     const valideFormMessage = document.querySelector(".form-valide-message")
@@ -266,52 +299,101 @@ function openModalCloseModal() {
                     reader.readAsDataURL(file)
                     })
 
-                function createNewWork() {
-                    submitWorkButton.addEventListener("submit", async (event) => {
-                        event.preventDefault()
-                        const max = 4 * 1024 * 1024
-                        if (photoInput.files[0].size > max) {
-                            alert("taille de l'image trop importante")
-                        } else if (photoInput.value === '' || titleInput.value === '' || selectInput.value === '') {
-                                formInvalideMessage.style.display = "block"
-                                return
-                        } else {
-                        
-                        let formData = new FormData()
+                    const createNewWork = () => {
+                        submitWorkButton.addEventListener("submit", async (event) => {
+                            event.preventDefault()
+                            const max = 4 * 1024 * 1024
+                            if (photoInput.files[0].size > max) {
+                                alert("taille de l'image trop importante")
+                            } else if (photoInput.value === '' || titleInput.value === '' || selectInput.value === '') {
+                                    formInvalideMessage.style.display = "block"
+                                    return
+                            } else {
+                            
+                                let formData = new FormData()
 
-                        formData.append("image", photoInput.files[0])
-                        formData.append("title", titleInput.value)
-                        formData.append("category", selectInput.value)
+                                formData.append("image", photoInput.files[0])
+                                formData.append("title", titleInput.value)
+                                formData.append("category", selectInput.value)
 
-                        let addRequest = {
-                            method: "POST",
-                            headers: {
-                                Authorization: `Bearer ${token}`
-                            },
-                            body: formData
-                        }
-                        fetch("http://localhost:5678/api/works", addRequest)
-                            .then(reponse => {
-                                if( reponse.ok) {
-                                    formInvalideMessage.style.display = "none"
-                                    valideFormMessage.style.display = "block"
-                                    submitWorkButton.classList.add("active")
-                                    genererWorks(works)
-                                } else {
-                                    formInvalideMessage.style.display = "none"
-                                    requestInvalideMessage.style.display = "block"
+                                let addRequest = {
+                                    method: "POST",
+                                    headers: {
+                                        Authorization: `Bearer ${token}`
+                                    },
+                                    body: formData
                                 }
-                            })
-                        }
-                    })
-                
+                                
+                                fetch("http://localhost:5678/api/works", addRequest)
+                                    .then(async response => {
+                                        console.log(response.status)
+                                        if( response.status === 201) {
+                                            formInvalideMessage.style.display = "none"
+                                            valideFormMessage.style.display = "block"
+                                            btnEnvoyerForm.classList.add("active")
+                                            
+                                            const reader = new FileReader()
+                                            reader.onload =  e => {
+                                                const dataURL = e.target.result
+                                                const newImage = document.createElement("img")
+                                                newImage.src = dataURL
+                                                
+                                                const newTitle = document.createElement("figcaption")
+                                                newTitle.textContent = titleInput.value
+                                                
+                                                const newFigure = document.createElement("figure")
+                                                newFigure.appendChild(newImage)
+                                                newFigure.appendChild(newTitle)
+                                                
+                                                gallery.appendChild(newFigure) 
+                                                
+                                            }
+
+                                            reader.readAsDataURL(photoInput.files[0])
+
+                                            let newObjectToAdd =  await response.json()
+
+                                            works.push(newObjectToAdd)
+
+                                        } else {
+                                            formInvalideMessage.style.display = "none"
+                                            requestInvalideMessage.style.display = "block"
+                                        }
+
+                                        if (response.status === 400) {
+                                            console.error("Bad Request", response.statusText)
+                                        }
+
+                                        if (response.status === 401) {
+                                            console.error("Unauthorized", response.statusText)
+                                        }
+
+                                        if (response.status === 500) {
+                                            console.error("Unexpected Error", response.statusText)
+                                        }
+                                    })
+                            }
+                        })
+                    }
+                    createNewWork()
                 }
-                createNewWork()
-                
-                }
-                
+              
 }
-const stopPropagation = function (e) {
+
+// fonction pour refresh les projets
+
+const refreshProjects = works => {
+    const containerGallery = document.querySelector(".gallery")
+    containerGallery.innerHTML = ""
+
+    // boucle pour creer et montrer les works dans la gallery
+    for (const work of works) {
+        const projectHTML = `<figure><img src="${work.imageUrl}" alt="${work.title}"><figcaption>${work.title}</figcaption></figure>`
+        containerGallery.insertAdjacentHTML("beforeend", projectHTML)
+    }
+}
+
+const stopPropagation = e => {
     e.stopPropagation()
 }
 
