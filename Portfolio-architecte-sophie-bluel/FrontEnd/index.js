@@ -303,11 +303,11 @@ const openModalCloseModal = () => {
                         submitWorkButton.addEventListener("submit", async (event) => {
                             event.preventDefault()
                             const max = 4 * 1024 * 1024
-                            if (photoInput.files[0].size > max) {
+                            if (photoInput.files[0] === '' || titleInput.value === '' || selectInput.value === '') {
+                                formInvalideMessage.style.display = "block"
+                                return 
                                 alert("taille de l'image trop importante")
-                            } else if (photoInput.value === '' || titleInput.value === '' || selectInput.value === '') {
-                                    formInvalideMessage.style.display = "block"
-                                    return
+                            } else if (photoInput.files[0].size > max) {
                             } else {
                             
                                 let formData = new FormData()
