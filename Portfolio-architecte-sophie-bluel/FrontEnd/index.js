@@ -305,9 +305,9 @@ const openModalCloseModal = () => {
                             const max = 4 * 1024 * 1024
                             if (photoInput.files[0] === '' || titleInput.value === '' || selectInput.value === '') {
                                 formInvalideMessage.style.display = "block"
-                                return 
+                                
+                            } else if (photoInput.files[0].size > max) {  
                                 alert("taille de l'image trop importante")
-                            } else if (photoInput.files[0].size > max) {
                             } else {
                             
                                 let formData = new FormData()
