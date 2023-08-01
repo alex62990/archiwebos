@@ -9,13 +9,13 @@ const modalWrapper = document.querySelector(".modal-wrapper")
 
 // importation des travaux
 
-const importWorks = () => {   
-        fetch("http://localhost:5678/api/works")
-            .then(response => response.json())
-            .then(data => {
-                works = data
-                genererWorks(works)   
-            })
+const importWorks = () => {
+    fetch("http://localhost:5678/api/works")
+        .then(response => response.json())
+        .then(data => {
+            works = data
+            genererWorks(works)
+        })
 }
 importWorks()
 
@@ -58,10 +58,10 @@ const filtrerWorks = () => {
 
         filtre.addEventListener("click", () => {
             if (valeurFiltre === "Tous") { worksFiltre = works }
-            else { worksFiltre = works.filter((work) => valeurFiltre === work.category.name)}
+            else { worksFiltre = works.filter((work) => valeurFiltre === work.category.name) }
             genererWorks(worksFiltre)
         })
-    }) 
+    })
 }
 filtrerWorks()
 
@@ -73,12 +73,12 @@ bouton.classList.add('filtre_selected')
 
 boutons.forEach((bouton) => {                                       // pour chaque boutons filtre, ecoute du clic avec fonction pour chaque bouton filtre
     bouton.addEventListener("click", () => {                        // enlever filtre selectionné pour tous et en meme temps selectionner le filtre target
-      boutons.forEach((bouton) => {
-        bouton.classList.remove('filtre_selected')
-      })
-      bouton.classList.add('filtre_selected')
+        boutons.forEach((bouton) => {
+            bouton.classList.remove('filtre_selected')
+        })
+        bouton.classList.add('filtre_selected')
     })
-  })
+})
 
 
 // connexion utilisateur et affichage des boutons de modales
@@ -86,22 +86,22 @@ boutons.forEach((bouton) => {                                       // pour chaq
 const modalButton = document.querySelector(".modal-button")
 const modalButtonImg = document.querySelector(".modal-button-img")
 
-  let token = localStorage.getItem("Token")
-  if (token) {
-      const editingBanner = document.createElement("div")
-      header.prepend(editingBanner)
-      editingBanner.classList = "editing-banner"
-      editingBanner.innerHTML = `<i class="fa-regular fa-pen-to-square"></i>
+let token = localStorage.getItem("Token")
+if (token) {
+    const editingBanner = document.createElement("div")
+    header.prepend(editingBanner)
+    editingBanner.classList = "editing-banner"
+    editingBanner.innerHTML = `<i class="fa-regular fa-pen-to-square"></i>
                                  <p class="text-edition">Mode édition</p>
                                  <button class="changement">publier les changements</button>`
-    containerFiltre.style.display = "none"               
-    login.innerHTML = "logout" 
+    containerFiltre.style.display = "none"
+    login.innerHTML = "logout"
     modalButton.style.display = "flex"
     modalButtonImg.style.display = "flex"
-    login.addEventListener("click", () => {            
+    login.addEventListener("click", () => {
         localStorage.removeItem("Token")
         window.location.replace("login.html")
-    }) 
+    })
 }
 
 // modale utilisateur
@@ -157,8 +157,8 @@ const openModalCloseModal = () => {
                                 const index = works.findIndex(work => work.id == workId)
                                 works.splice(index, 1)
                                 refreshProjects(works)
-                                }
-                            
+                            }
+
                             if (response.status === 401) {
                                 console.error("Unauthorized", response.statusText)
                             }
@@ -169,34 +169,7 @@ const openModalCloseModal = () => {
                         })
                 } catch (error) {
                     console.log(error)
-                }              
-            })
-
-            const suppresionGalleryModal = document.querySelector(".sup-gallery")
-            suppresionGalleryModal.addEventListener("click", () => {
-                const workId = trashcan.getAttribute("data-id")
-                try {
-                    fetch(`http://localhost:5678/api/works/${workId}`, deleteRequest)
-                        .then(response => {
-                            if (response.ok) {
-                                trashcan.parentElement.remove()
-                                const index = works.findIndex(work => work.id == workId)
-                                works.splice(index, 1)
-                                refreshProjects(works)
-                                }
-
-                            if (response.status === 401) {
-                                console.error("Unauthorized", response.statusText)
-                            }
-
-                            if (response.status === 500) {
-                                console.error("Unexpected Behaviour", response.statusText)
-                            }
-                        })
-
-                } catch (error) {
-                    console.log(error)
-                }              
+                }
             })
         })
     }
@@ -205,32 +178,32 @@ const openModalCloseModal = () => {
     const modalClose = document.querySelector(".js-modal-close")
     modalClose.addEventListener("click", () => closeModal())
 
-        function closeModal() {
-            modal.style.display = "none"
-            modal.removeEventListener('click', closeModal)
-            modal.querySelector('.js-modal-close').removeEventListener('click', closeModal)
-            modal.querySelector('.js-modal-stop').removeEventListener('click', stopPropagation)
+    function closeModal() {
+        modal.style.display = "none"
+        modal.removeEventListener('click', closeModal)
+        modal.querySelector('.js-modal-close').removeEventListener('click', closeModal)
+        modal.querySelector('.js-modal-stop').removeEventListener('click', stopPropagation)
+    }
+
+    window.addEventListener('keydown', function (e) {
+        if (e.key === "Escape" || e.key === "Esc") {
+            closeModal(e)
         }
-        
-        window.addEventListener('keydown', function (e) {
-            if (e.key === "Escape" || e.key === "Esc") {
-                closeModal(e)
-            }
+    })
+
+    const btnModal2 = document.querySelector(".btn-modal2")
+    btnModal2.addEventListener("click", () => openModal2())
+
+    const generateCategorie = () => {
+        let optionsHTML = ""
+        categories.forEach(category => {
+            optionsHTML += `<option value="${category.id}">${category.name}</option>`
         })
+        return optionsHTML
+    }
 
-                const btnModal2 = document.querySelector(".btn-modal2")
-                btnModal2.addEventListener("click", () => openModal2())
-
-                const generateCategorie = () => {
-                    let optionsHTML = ""
-                    categories.forEach(category => {
-                        optionsHTML += `<option value="${category.id}">${category.name}</option>`
-                    })
-                    return optionsHTML
-                }
-
-                const openModal2 = () => {
-                    modalWrapper.innerHTML = `
+    const openModal2 = () => {
+        modalWrapper.innerHTML = `
                                     <button class="js-modal-return btn-arrow-left"><i class="fa-solid fa-arrow-left fa-xl"></i></button>
                                     <button class="js-modal-close btn-xmark"><i class="fa-solid fa-xmark fa-xl"></i></button>
                                     <h3 id="tiltemodal">Ajout Photo</h3>
@@ -266,118 +239,118 @@ const openModalCloseModal = () => {
                                     <p class="form-valide-message">Informations enregistrées !</p>
                                     <p class="request-invalide-message">Erreur lors de l'envoi !</p>                                    
                     `
-                    const modalClose = document.querySelector(".js-modal-close")
-                    modalClose.addEventListener("click", () => closeModal())
+        const modalClose = document.querySelector(".js-modal-close")
+        modalClose.addEventListener("click", () => closeModal())
 
-                    const arrowLeft = document.querySelector(".js-modal-return")
-                    arrowLeft.addEventListener("click", () => openModalCloseModal())
+        const arrowLeft = document.querySelector(".js-modal-return")
+        arrowLeft.addEventListener("click", () => openModalCloseModal())
 
-                    const photoInput = document.getElementById("photo")
-                    const titleInput = document.getElementById("titre")
-                    const selectInput = document.getElementById("categories")
-                    const submitWorkButton = document.getElementById("formEnvoyer")
-                    const btnEnvoyerForm = document.querySelector(".btn-submit-valider")
-                    const selectedImage = document.querySelector(".img-selected")
-                    const formInvalideMessage = document.querySelector(".form-invalide-message")
-                    const valideFormMessage = document.querySelector(".form-valide-message")
-                    const requestInvalideMessage = document.querySelector(".request-invalide-message")
+        const photoInput = document.getElementById("photo")
+        const titleInput = document.getElementById("titre")
+        const selectInput = document.getElementById("categories")
+        const submitWorkButton = document.getElementById("formEnvoyer")
+        const btnEnvoyerForm = document.querySelector(".btn-submit-valider")
+        const selectedImage = document.querySelector(".img-selected")
+        const formInvalideMessage = document.querySelector(".form-invalide-message")
+        const valideFormMessage = document.querySelector(".form-valide-message")
+        const requestInvalideMessage = document.querySelector(".request-invalide-message")
 
-                    photoInput.addEventListener("change", () => {
-                    const file = photoInput.files[0]
-                    const reader = new FileReader()
+        photoInput.addEventListener("change", () => {
+            const file = photoInput.files[0]
+            const reader = new FileReader()
 
-                    reader.onload = (e) => {
-                        selectedImage.src = e.target.result
-                        const addImgForm = document.querySelector(".photo-form");
-                        const formElements = addImgForm.querySelectorAll(".photo-form > *")
+            reader.onload = (e) => {
+                selectedImage.src = e.target.result
+                const addImgForm = document.querySelector(".photo-form");
+                const formElements = addImgForm.querySelectorAll(".photo-form > *")
 
-                    formElements.forEach((element) => {
-                        element.style.display = "none"
-                        })
-                    selectedImage.style.display = "flex"
+                formElements.forEach((element) => {
+                    element.style.display = "none"
+                })
+                selectedImage.style.display = "flex"
+            }
+            reader.readAsDataURL(file)
+        })
+
+        const createNewWork = () => {
+            submitWorkButton.addEventListener("submit", async (event) => {
+                event.preventDefault()
+                const max = 4 * 1024 * 1024
+                if (photoInput.files[0] === '' || titleInput.value === '' || selectInput.value === '') {
+                    formInvalideMessage.style.display = "block"
+
+                } else if (photoInput.files[0].size > max) {
+                    alert("taille de l'image trop importante")
+                } else {
+
+                    let formData = new FormData()
+
+                    formData.append("image", photoInput.files[0])
+                    formData.append("title", titleInput.value)
+                    formData.append("category", selectInput.value)
+
+                    let addRequest = {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: formData
                     }
-                    reader.readAsDataURL(file)
-                    })
 
-                    const createNewWork = () => {
-                        submitWorkButton.addEventListener("submit", async (event) => {
-                            event.preventDefault()
-                            const max = 4 * 1024 * 1024
-                            if (photoInput.files[0] === '' || titleInput.value === '' || selectInput.value === '') {
-                                formInvalideMessage.style.display = "block"
-                                
-                            } else if (photoInput.files[0].size > max) {  
-                                alert("taille de l'image trop importante")
-                            } else {
-                            
-                                let formData = new FormData()
+                    fetch("http://localhost:5678/api/works", addRequest)
+                        .then(async response => {
+                            console.log(response.status)
+                            if (response.status === 201) {
+                                formInvalideMessage.style.display = "none"
+                                valideFormMessage.style.display = "block"
+                                btnEnvoyerForm.classList.add("active")
 
-                                formData.append("image", photoInput.files[0])
-                                formData.append("title", titleInput.value)
-                                formData.append("category", selectInput.value)
+                                const reader = new FileReader()
+                                reader.onload = e => {
+                                    const dataURL = e.target.result
+                                    const newImage = document.createElement("img")
+                                    newImage.src = dataURL
 
-                                let addRequest = {
-                                    method: "POST",
-                                    headers: {
-                                        Authorization: `Bearer ${token}`
-                                    },
-                                    body: formData
+                                    const newTitle = document.createElement("figcaption")
+                                    newTitle.textContent = titleInput.value
+
+                                    const newFigure = document.createElement("figure")
+                                    newFigure.appendChild(newImage)
+                                    newFigure.appendChild(newTitle)
+
+                                    gallery.appendChild(newFigure)
+
                                 }
-                                
-                                fetch("http://localhost:5678/api/works", addRequest)
-                                    .then(async response => {
-                                        console.log(response.status)
-                                        if( response.status === 201) {
-                                            formInvalideMessage.style.display = "none"
-                                            valideFormMessage.style.display = "block"
-                                            btnEnvoyerForm.classList.add("active")
-                                            
-                                            const reader = new FileReader()
-                                            reader.onload =  e => {
-                                                const dataURL = e.target.result
-                                                const newImage = document.createElement("img")
-                                                newImage.src = dataURL
-                                                
-                                                const newTitle = document.createElement("figcaption")
-                                                newTitle.textContent = titleInput.value
-                                                
-                                                const newFigure = document.createElement("figure")
-                                                newFigure.appendChild(newImage)
-                                                newFigure.appendChild(newTitle)
-                                                
-                                                gallery.appendChild(newFigure) 
-                                                
-                                            }
 
-                                            reader.readAsDataURL(photoInput.files[0])
+                                reader.readAsDataURL(photoInput.files[0])
 
-                                            let newObjectToAdd =  await response.json()
+                                let newObjectToAdd = await response.json()
 
-                                            works.push(newObjectToAdd)
+                                works.push(newObjectToAdd)
 
-                                        } else {
-                                            formInvalideMessage.style.display = "none"
-                                            requestInvalideMessage.style.display = "block"
-                                        }
+                            } else {
+                                formInvalideMessage.style.display = "none"
+                                requestInvalideMessage.style.display = "block"
+                            }
 
-                                        if (response.status === 400) {
-                                            console.error("Bad Request", response.statusText)
-                                        }
+                            if (response.status === 400) {
+                                console.error("Bad Request", response.statusText)
+                            }
 
-                                        if (response.status === 401) {
-                                            console.error("Unauthorized", response.statusText)
-                                        }
+                            if (response.status === 401) {
+                                console.error("Unauthorized", response.statusText)
+                            }
 
-                                        if (response.status === 500) {
-                                            console.error("Unexpected Error", response.statusText)
-                                        }
-                                    })
+                            if (response.status === 500) {
+                                console.error("Unexpected Error", response.statusText)
                             }
                         })
-                    }
-                    createNewWork()
                 }
-              
+            })
+        }
+        createNewWork()
+    }
+
 }
 
 // fonction pour refresh les projets
@@ -400,4 +373,3 @@ const stopPropagation = e => {
 
 
 
-    
