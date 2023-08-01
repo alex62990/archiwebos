@@ -25,9 +25,30 @@ const categoriesImport = () => {
     fetch("http://localhost:5678/api/categories")
         .then(response => response.json())
         .then((data) => {
-            categories = data
-        })
-}
+            categories = data;
+            genererBoutonsFiltre(categories);
+        });
+};
+
+const genererBoutonsFiltre = (categories) => {
+    const containerFiltre = document.getElementById("container-filtre");
+
+    const buttonAll = document.createElement("button");
+    buttonAll.className = "filtre";
+    buttonAll.dataset.id = "0";
+    buttonAll.textContent = "Tous";
+    containerFiltre.appendChild(buttonAll);
+
+    categories.forEach((category) => {
+        const bouton = document.createElement("button");
+        bouton.classList.add("filtre");
+        bouton.textContent = category.name;
+        bouton.addEventListener("click", () => {
+            filtrerWorks(category.name);
+        });
+        containerFiltre.appendChild(bouton);
+    });
+};
 categoriesImport()
 
 // fonction pour générer les travaux à partir de l'api
@@ -51,35 +72,23 @@ const genererWorks = works => {
     })
 }
 
+
+
 // fonction pour créer les filtres 
 const filtrerWorks = () => {
-    filtres.forEach(filtre => {
-        const valeurFiltre = filtre.textContent
+    const boutons = document.querySelectorAll('.filtre');
+    boutons.forEach((bouton) => {
+        bouton.addEventListener("click", () => {
+            const valeurFiltre = bouton.textContent;
+            boutons.forEach((bouton) => bouton.classList.remove('filtre_selected'));
+            bouton.classList.add('filtre_selected');
+            worksFiltre = valeurFiltre === "Tous" ? works : works.filter((work) => valeurFiltre === work.category.name);
+            genererWorks(worksFiltre);
+        });
+    });
+};
 
-        filtre.addEventListener("click", () => {
-            if (valeurFiltre === "Tous") { worksFiltre = works }
-            else { worksFiltre = works.filter((work) => valeurFiltre === work.category.name) }
-            genererWorks(worksFiltre)
-        })
-    })
-}
-filtrerWorks()
-
-// fonction pour faire le tri
-
-const boutons = document.querySelectorAll('.filtre')
-let bouton = document.querySelector('.filtre')
-bouton.classList.add('filtre_selected')
-
-boutons.forEach((bouton) => {                                       // pour chaque boutons filtre, ecoute du clic avec fonction pour chaque bouton filtre
-    bouton.addEventListener("click", () => {                        // enlever filtre selectionné pour tous et en meme temps selectionner le filtre target
-        boutons.forEach((bouton) => {
-            bouton.classList.remove('filtre_selected')
-        })
-        bouton.classList.add('filtre_selected')
-    })
-})
-
+filtrerWorks();
 
 // connexion utilisateur et affichage des boutons de modales
 
